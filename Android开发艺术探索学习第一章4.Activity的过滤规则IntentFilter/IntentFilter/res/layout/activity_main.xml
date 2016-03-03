@@ -11,8 +11,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal" >
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
 
         <Button
             android:layout_width="wrap_content"
@@ -26,6 +26,13 @@
             android:layout_height="wrap_content"
             android:onClick="toTestActivity2"
             android:text="category" >
+        </Button>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="toTestActivity4"
+            android:text="data" >
         </Button>
     </LinearLayout>
 

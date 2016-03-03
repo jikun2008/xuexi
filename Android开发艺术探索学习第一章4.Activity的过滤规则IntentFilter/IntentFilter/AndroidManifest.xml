@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="17" />
 
     <application
         android:allowBackup="true"
@@ -40,6 +40,30 @@
                 <category android:name="com.test.category" />
                 <category android:name="com.test.category1" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".TestActivty3"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.test.action2" />
+
+                <category android:name="com.test.category" />
+                <category android:name="com.test.category1" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".TestActivty4"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.test.data" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="image/*"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
     </application>
