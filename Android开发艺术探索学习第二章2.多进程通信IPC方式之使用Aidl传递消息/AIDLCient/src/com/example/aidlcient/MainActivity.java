@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		try {
-			
+
 			if (iBookManager != null && iBookManager.asBinder().isBinderAlive()) {
 
 				iBookManager.unresigner(arriveListener);
@@ -64,6 +64,12 @@ public class MainActivity extends Activity {
 		public void onServiceDisconnected(ComponentName name) {
 			// TODO Auto-generated method stub
 			Log.d(Book.TAG, Book.TAG + ":onServiceDisconnected");
+			/**
+			 * onServiceDisconnected() 在连接正常关闭的情况下是不会被调用的, 该方法只在Service
+			 * 被破坏了或者被杀死的时候调用. 例如, 系统资源不足, 要关闭一些Services, 刚好连接绑定的 Service
+			 * 是被关闭者之一, 这个时候onServiceDisconnected() 就会被调用。
+			 */
+
 		}
 
 		@Override
