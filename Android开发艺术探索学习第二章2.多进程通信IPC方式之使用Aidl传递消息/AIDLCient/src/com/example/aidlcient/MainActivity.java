@@ -1,6 +1,7 @@
 package com.example.aidlcient;
 
 import com.example.aidlservice.aidl.Book;
+import com.example.aidlservice.aidl.IBookArriveListener;
 import com.example.aidlservice.aidl.IBookManager;
 
 import android.app.Activity;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-	private String TAG = MainActivity.class.getSimpleName();
 
 	private IBookManager iBookManager;
 	private TextView textView;
@@ -33,8 +33,21 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
+		try {
+			
+			if (iBookManager != null && iBookManager.asBinder().isBinderAlive()) {
+
+				iBookManager.unresigner(arriveListener);
+				Log.d(Book.TAG, Book.TAG
+						+ ":iBookManager.unresigner(arriveListener)");
+
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		unbindService(serviceConnection);
-		iBookManager = null;
+
 		super.onDestroy();
 	}
 
@@ -50,14 +63,25 @@ public class MainActivity extends Activity {
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			// TODO Auto-generated method stub
-			Log.d(TAG, TAG + ":onServiceDisconnected");
+			Log.d(Book.TAG, Book.TAG + ":onServiceDisconnected");
 		}
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			// TODO Auto-generated method stub
-			Log.d(TAG, TAG + ":onServiceConnected");
-			iBookManager = IBookManager.Stub.asInterface(service);
+
+			try {
+				Log.d(Book.TAG, Book.TAG + ":onServiceConnected");
+				iBookManager = IBookManager.Stub.asInterface(service);
+				iBookManager.resigner(arriveListener);
+				Log.d(Book.TAG, Book.TAG
+						+ ":iBookManager.resigner(arriveListener)");
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+
+			}
+
 		}
 	};
 
@@ -68,7 +92,7 @@ public class MainActivity extends Activity {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Log.d(TAG, TAG + ":" + e.toString());
+
 		}
 
 	}
@@ -80,9 +104,18 @@ public class MainActivity extends Activity {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Log.d(TAG, TAG + ":" + e.toString());
+
 		}
 
 	}
+
+	IBookArriveListener arriveListener = new IBookArriveListener.Stub() {
+
+		@Override
+		public void onNewBookArrived(Book book) throws RemoteException {
+			// TODO Auto-generated method stub
+			Log.d(Book.TAG, Book.TAG + "测试代码：" + book.toString());
+		}
+	};
 
 }

@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Book implements Parcelable {
+	
+	public static final String TAG="AIDL";
 
 	private String name;
 	private String price;
@@ -69,5 +71,4 @@ public class Book implements Parcelable {
 		this.name = name;
 		this.price = price;
 	}
-
 }
