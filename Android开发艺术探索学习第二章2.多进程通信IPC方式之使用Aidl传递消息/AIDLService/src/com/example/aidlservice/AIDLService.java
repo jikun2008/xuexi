@@ -59,7 +59,7 @@ public class AIDLService extends Service {
 			// TODO Auto-generated method stub
 			remoteCallbackList.register(i);
 			int size = remoteCallbackList.beginBroadcast();
-			Log.d(Book.TAG, Book.TAG+":+unresigner------" + "size=" + size);
+			Log.d(Book.TAG, Book.TAG + ":+resigner------" + "size=" + size);
 
 			remoteCallbackList.finishBroadcast();
 
@@ -71,7 +71,7 @@ public class AIDLService extends Service {
 
 			remoteCallbackList.unregister(i);
 			int size = remoteCallbackList.beginBroadcast();
-			Log.d(Book.TAG, Book.TAG+":+unresigner------" + "size=" + size);
+			Log.d(Book.TAG, Book.TAG + ":+unresigner------" + "size=" + size);
 
 			remoteCallbackList.finishBroadcast();
 		}
