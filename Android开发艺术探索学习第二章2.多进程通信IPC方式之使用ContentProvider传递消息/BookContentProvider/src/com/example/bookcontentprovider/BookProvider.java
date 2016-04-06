@@ -27,20 +27,20 @@ public class BookProvider extends ContentProvider {
 		mUriMatcher.addURI(authorities, "user", USER_URI_CODE);
 	}
 
-	private Context mcContext;
 	private SQLiteDatabase database;
 
 	@Override
 	public boolean onCreate() {
 		// TODO Auto-generated method stub
-		mcContext = getContext();
 
 		initProvidrData();
 		return true;
 	}
 
 	private void initProvidrData() {
-		database = new DbOpenHelper(mcContext).getWritableDatabase();
+		DatabaseContext dbContext = new DatabaseContext(getContext(), "dbdemo");
+		// myHelper = new MySQLiteHelper(dbContext, "my.db", null, 1);
+		database = new DbOpenHelper(dbContext).getWritableDatabase();
 		database.execSQL("delete from " + DbOpenHelper.BOOK_TABLE_NAME);
 		database.execSQL("delete from " + DbOpenHelper.USER_TABLE_NAME);
 		database.execSQL("insert into book values(3,'android');");
