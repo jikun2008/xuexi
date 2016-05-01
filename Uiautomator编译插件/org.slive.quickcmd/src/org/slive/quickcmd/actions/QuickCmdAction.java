@@ -22,6 +22,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slive.quickcmd.actions.utils.AutoWork;
 import org.slive.quickcmd.actions.utils.AutoWork.OnCmdListener;
 import org.slive.quickcmd.actions.utils.CmdCommandGenerator;
+import org.slive.quickcmd.actions.utils.ConsoleFactory;
 
 /**
  * 
@@ -120,12 +121,15 @@ public class QuickCmdAction implements IObjectActionDelegate {
 
 	private void dobuildxml(final String path) {
 		AutoWork autoWork = new AutoWork();
-		autoWork.doProgress("build.xml", CmdCommandGenerator.buildbuildxmlFileCommand(path), new OnCmdListener() {
+		final String TAG = "build build.xml";
+		ConsoleFactory.printToConsole(TAG + "!----->begin");
+		autoWork.doProgress(TAG, CmdCommandGenerator.buildbuildxmlFileCommand(path), new OnCmdListener() {
 
 			@Override
 			public void onsuccess() {
 				// TODO Auto-generated method stub
-				System.out.println("buildxml----" + "onsuccess");
+
+				ConsoleFactory.printToConsole(TAG + "!----->success");
 				dojar(path);
 				reshFile();
 
@@ -134,27 +138,31 @@ public class QuickCmdAction implements IObjectActionDelegate {
 			@Override
 			public void onfailed() {
 				// TODO Auto-generated method stub
-				System.out.println("buildxml----" + "onfailed");
+				ConsoleFactory.printToConsole(TAG + "!----->failed");
+
 			}
 		});
 	}
 
 	private void dojar(String path) {
-
+		File file = new File(path);
+		String name = file.getName();
+		final String TAG = "build +" + name + ".jar";
+		ConsoleFactory.printToConsole(TAG + "!----->begin");
 		AutoWork autoWork = new AutoWork();
-		autoWork.doProgressFilePath("生成jar", CmdCommandGenerator.buildbuildJarCommand(path), path, new OnCmdListener() {
+		autoWork.doProgressFilePath(TAG, CmdCommandGenerator.buildbuildJarCommand(path), path, new OnCmdListener() {
 
 			@Override
 			public void onsuccess() {
 				// TODO Auto-generated method stub
-				System.out.println("生成jar----" + "onsuccess");
+				ConsoleFactory.printToConsole(TAG + "!----->success");
 				reshFile();
 			}
 
 			@Override
 			public void onfailed() {
 				// TODO Auto-generated method stub
-				System.out.println("生成jar----" + "onfailed");
+				ConsoleFactory.printToConsole(TAG + "!----->failed");
 			}
 		});
 
@@ -164,73 +172,13 @@ public class QuickCmdAction implements IObjectActionDelegate {
 		if ((selected instanceof IResource)) {
 			try {
 				((IResource) selected).refreshLocal(IResource.DEPTH_INFINITE, null);
+				ConsoleFactory.printToConsole("reshFile!");
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
+				ConsoleFactory.printToConsole("reshFile!" + e.toString());
 				e.printStackTrace();
 			}
 		}
 	}
 
-	/**
-	 * 生产build.xml
-	 * 
-	 * @param path
-	 * @throws IOException
-	 */
-	private boolean buildbuildxmlFile(String path) {
-		File file = new File(path);
-		file.getName();
-		System.out.println("file===" + file.getName());
-		String cmd = START_CMD + "android create uitest-project -n Uiauto -t 18 -p " + path;
-		System.out.println("cmd===" + cmd);
-
-		try {
-			Process process = Runtime.getRuntime().exec(cmd, null, new File(path));
-			process.waitFor();
-			return true;
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-
-	}
-
-	/**
-	 * 生成JAR包
-	 */
-	private void generateJar(String path) {
-		String cmd = START_CMD + "ant build";
-		try {
-			Runtime.getRuntime().exec(cmd, null, new File(path));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void doProgressbuildbuildxmlFile(String path) {
-		final String otherpaty = path;
-		Job job = new Job("Job") {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				monitor.beginTask("Start Task", 100);
-				monitor.worked(40);
-				buildbuildxmlFile(otherpaty);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				monitor.done();
-				return Status.OK_STATUS;
-			}
-		};
-		job.schedule();
-	}
 }

@@ -131,10 +131,13 @@ public class AutoWork {
 	}
 
 	private void sysoutSuccess(String info) {
-		System.out.println("cmd命令执行成功!");
+		ConsoleFactory.printToConsole("cmd commad success!");
+
 	}
 
 	private void sysoutFailed(String info) {
-		System.out.println("cmd命令执行失败:" + info);
+		ConsoleFactory.printToConsole("cmd commad failed:" + info);
+	
 	}
+
 }
