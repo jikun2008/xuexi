@@ -39,4 +39,35 @@ public class CmdCommandGenerator {
 		System.out.println("cmd=" + cmd);
 		return cmd;
 	}
+
+	/**
+	 * 生成PUSH到手机的cmd指令
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static String buildPushToAndroidCommand(String path) {
+		File file = new File(path);
+		String filename = file.getName();
+		String jarBinpath = path + File.separator + "bin" + File.separator + filename + ".jar";
+		String cmd = START_CMD + "adb push " + jarBinpath + " data/local/tmp";
+		System.out.println("cmd=" + cmd);
+		return cmd;
+
+	}
+
+	/**
+	 * 生成执行命令cmd指令
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static String buildstartAndroidCommand(String path, String packageclassname) {
+		File file = new File(path);
+		String filename = file.getName();
+		String jarname = filename + ".jar";
+		String cmd = START_CMD + "adb shell uiautomator runtest " + jarname + " -c " + packageclassname;
+		System.out.println("cmd=" + cmd);
+		return cmd;
+	}
 }

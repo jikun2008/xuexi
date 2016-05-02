@@ -37,6 +37,9 @@ public class QuickCmdAction implements IObjectActionDelegate {
 	private Object selected = null;
 	private Class<?> selectedClass = null;
 	private static final String START_CMD = "cmd /c ";
+	private String packageclassname = "";
+
+	private String path;
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 	}
@@ -46,14 +49,15 @@ public class QuickCmdAction implements IObjectActionDelegate {
 			MessageDialog.openInformation(new Shell(), "Quick Cmd", "Unable to cmd " + this.selectedClass.getName());
 			return;
 		}
+		path = "";
 		File directory = null;
-		String workName = null;
 		if ((this.selected instanceof IResource)) {
 			directory = new File(((IResource) this.selected).getLocation().toOSString());
+
 		} else if ((this.selected instanceof File)) {
 			directory = (File) this.selected;
 		}
-		workName = ((IResource) selected).getProject().getName().toString();
+
 		try {
 			String filePath = "";
 			String startPath = "c:";
@@ -66,15 +70,18 @@ public class QuickCmdAction implements IObjectActionDelegate {
 
 				// 截取当前文件的开头盘符
 				startPath = filePath.substring(0, 2);
+				packageclassname = filePath;
 			}
 
-			filePath = getProjectPath() + File.separator + workName;
-
+			filePath = getProjectPath(selected);
+			path = filePath;
+			packageclassname = packageclassname.replace(filePath+File.separator+"src"+File.separator, "")
+					.replace(File.separator, ".").replace(".java", "");
 			// 运行CMD命令，并切换到当前目录下
-			if (isBuildFileExists(filePath)) {
-				dojar(filePath);
+			if (isBuildFileExists(path)) {
+				dojar();
 			} else {
-				dobuildxml(filePath);
+				dobuildxml();
 			}
 
 			// Runtime.getRuntime().exec("cmd /c start cd " + filePath, null,
@@ -114,10 +121,14 @@ public class QuickCmdAction implements IObjectActionDelegate {
 		return selected;
 	}
 
-	public static String getProjectPath() {
-		String path = null;
-		path = Platform.getLocation().toString();
-		path = path.replace("/", File.separator);
+	public static String getProjectPath(Object selected) {
+		String path = "";
+
+		path = ((IResource) selected).getProject().getLocation().toString();
+		// String name = "";
+		// name = ((IResource) selected).getProject().getName().toString();
+		path=path.replace("/", File.separator);
+
 		return path;
 	}
 
@@ -132,16 +143,16 @@ public class QuickCmdAction implements IObjectActionDelegate {
 		return file.exists();
 	}
 
-	private void dobuildxml(final String path) {
+	private void dobuildxml() {
 		AutoWork autoWork = new AutoWork();
-		final String TAG = "build build.xml";
+		String TAG = "build build.xml";
 		autoWork.doProgress(TAG, CmdCommandGenerator.buildbuildxmlFileCommand(path), new OnCmdListener() {
 
 			@Override
 			public void onsuccess() {
 				// TODO Auto-generated method stub
 
-				dojar(path);
+				dojar();
 				reshFile();
 
 			}
@@ -154,10 +165,10 @@ public class QuickCmdAction implements IObjectActionDelegate {
 		});
 	}
 
-	private void dojar(String path) {
+	private void dojar() {
 		File file = new File(path);
 		String name = file.getName();
-		final String TAG = "build +" + name + ".jar";
+		String TAG = "build +" + name + ".jar";
 		AutoWork autoWork = new AutoWork();
 		autoWork.doProgressFilePath(TAG, CmdCommandGenerator.buildbuildJarCommand(path), path, new OnCmdListener() {
 
@@ -165,6 +176,7 @@ public class QuickCmdAction implements IObjectActionDelegate {
 			public void onsuccess() {
 				// TODO Auto-generated method stub
 				reshFile();
+				doPushJartoPhone();
 			}
 
 			@Override
@@ -175,38 +187,55 @@ public class QuickCmdAction implements IObjectActionDelegate {
 
 	}
 
-	private void showSettingDilaog(String path) {
+	private void doPushJartoPhone() {
+		AutoWork autoWork = new AutoWork();
+		File file = new File(path);
+		String name = file.getName();
+		String TAG = "push " + name + ".jar" + " to phone";
+		autoWork.doProgress(TAG, CmdCommandGenerator.buildPushToAndroidCommand(path), new OnCmdListener() {
 
-		IPreferenceStore store = QuickCmdActivator.getDefault().getPreferenceStore();
-		String info = store.getString(WorkFlowPreferenceConstants.ID);
-		InputDialog inputDlg = new InputDialog(new Shell(), "enter", "please enter your ID", info,
-				new IInputValidator() {
-					public String isValid(String newText) {
-						int i;
-						try {
-							i = Integer.parseInt(newText);
-						} catch (NumberFormatException e) {
-							return "Inter Only!";
-						}
+			@Override
+			public void onsuccess() {
+				// TODO Auto-generated method stub
+				doStartJarPhone();
+			}
 
-						if (i < 0) {
-							return "too young!";
-						}
+			@Override
+			public void onfailed() {
+				// TODO Auto-generated method stub
 
-						if (i > 150) {
-							return "too old!";
-						}
+			}
+		});
 
-						return null;
+	}
+
+	/**
+	 * 开始执行uiautomator
+	 * 
+	 * @param path
+	 * @param packageclassname
+	 */
+	private void doStartJarPhone() {
+		AutoWork autoWork = new AutoWork();
+		File file = new File(path);
+		String name = file.getName();
+		String TAG = "adb shell uiautomator runtest " + name + ".jar";
+		autoWork.doProgress(TAG, CmdCommandGenerator.buildstartAndroidCommand(path, packageclassname),
+				new OnCmdListener() {
+
+					@Override
+					public void onsuccess() {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onfailed() {
+						// TODO Auto-generated method stub
+
 					}
 				});
 
-		if (inputDlg.open() == Window.OK) {
-			System.out.println(inputDlg.getValue());
-			store.setValue(WorkFlowPreferenceConstants.ID, inputDlg.getValue());
-			ConsoleFactory.printToConsole(CmdCommandGenerator.buildbuildxmlFileCommand(path));
-			// store.putValue("JIKUNLOVEXU", inputDlg.getValue());
-		}
 	}
 
 	private void reshFile() {

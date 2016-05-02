@@ -39,9 +39,10 @@ public class AutoWork {
 	public IStatus runCmd(String cmd) {
 		IStatus currentstatus = Status.CANCEL_STATUS;
 		try {
-
+			ConsoleFactory.printToConsole(cmd);
 			Process process = Runtime.getRuntime().exec(cmd);
-
+			
+		
 			int code = writeCmdInfo(process);
 
 			// int code = process.waitFor();
@@ -98,9 +99,9 @@ public class AutoWork {
 	public IStatus runCmdFilepath(String cmd, String filepath) {
 		IStatus currentstatus = Status.CANCEL_STATUS;
 		try {
-
+			ConsoleFactory.printToConsole(cmd);
 			Process process = Runtime.getRuntime().exec(cmd, null, new File(filepath));
-
+			
 			int code = writeCmdInfo(process);
 
 			// int code = process.waitFor();
