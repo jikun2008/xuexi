@@ -79,6 +79,6 @@ public class ConsoleFactory implements IConsoleFactory {
 		MessageConsoleStream printer = ConsoleFactory.getConsole().newMessageStream();
 		printer.setActivateOnWrite(true);
 
-		printer.println("Uiautomator:" + message);
+		printer.println(message);
 	}
 }

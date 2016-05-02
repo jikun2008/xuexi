@@ -1,7 +1,9 @@
 package org.slive.quickcmd.actions.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -40,7 +42,9 @@ public class AutoWork {
 
 			Process process = Runtime.getRuntime().exec(cmd);
 
-			int code = process.waitFor();
+			int code = writeCmdInfo(process);
+
+			// int code = process.waitFor();
 
 			Thread.sleep(1000);
 			if (code == 0) {
@@ -97,7 +101,9 @@ public class AutoWork {
 
 			Process process = Runtime.getRuntime().exec(cmd, null, new File(filepath));
 
-			int code = process.waitFor();
+			int code = writeCmdInfo(process);
+
+			// int code = process.waitFor();
 
 			Thread.sleep(1000);
 			if (code == 0) {
@@ -131,13 +137,34 @@ public class AutoWork {
 	}
 
 	private void sysoutSuccess(String info) {
-		ConsoleFactory.printToConsole("cmd commad success!");
+		//ConsoleFactory.printToConsole("cmd commad success!");
 
 	}
 
 	private void sysoutFailed(String info) {
-		ConsoleFactory.printToConsole("cmd commad failed:" + info);
-	
+		//ConsoleFactory.printToConsole("cmd commad failed:" + info);
+
 	}
 
+	public int writeCmdInfo(Process pr) {
+		try {
+
+			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream(), "GBK"));
+
+			String line = null;
+
+			while ((line = input.readLine()) != null) {
+				System.out.println(line);
+				ConsoleFactory.printToConsole(line);
+			}
+
+			int exitVal = pr.waitFor();
+
+			return exitVal;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			e.printStackTrace();
+			return -1;
+		}
+	}
 }

@@ -3,6 +3,10 @@ package org.slive.quickcmd.actions.utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.slive.quickcmd.QuickCmdActivator;
+import org.slive.quickcmd.actions.preferences.WorkFlowPreferenceConstants;
+
 public class CmdCommandGenerator {
 	private static final String START_CMD = "cmd /c ";
 
@@ -15,7 +19,11 @@ public class CmdCommandGenerator {
 	public static String buildbuildxmlFileCommand(String path) {
 		File file = new File(path);
 		String filename = file.getName();
-		String cmd = START_CMD + "android create uitest-project -n " + filename + " -t 18 -p " + path;
+
+		IPreferenceStore store = QuickCmdActivator.getDefault().getPreferenceStore();
+		String id = store.getString(WorkFlowPreferenceConstants.ID);
+
+		String cmd = START_CMD + "android create uitest-project -n " + filename + " -t " + id + " -p " + path;
 		System.out.println("cmd=" + cmd);
 		return cmd;
 	}
