@@ -34,9 +34,9 @@ import org.slive.quickcmd.actions.utils.ConsoleFactory;
  */
 @SuppressWarnings("restriction")
 public class QuickCmdAction implements IObjectActionDelegate {
+	private final String TAG_LOG="QuickCmdAction:";
 	private Object selected = null;
 	private Class<?> selectedClass = null;
-	private static final String START_CMD = "cmd /c ";
 	private String packageclassname = "";
 
 	private String path;
@@ -88,6 +88,7 @@ public class QuickCmdAction implements IObjectActionDelegate {
 			// new File(startPath));
 		} catch (Exception e) {
 			System.err.println(e.toString());
+			ConsoleFactory.printToConsole(TAG_LOG+":"+e.toString());
 			e.printStackTrace();
 		}
 	}

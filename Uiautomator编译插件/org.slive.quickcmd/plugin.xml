@@ -5,6 +5,7 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             objectClass="org.eclipse.core.runtime.IAdaptable"
+            nameFilter="*.java"
             id="org.slive.quickcmd.contribution">
          <action
          	   definitionId="org.slive.quickcmd.command.QuickCmdAction"

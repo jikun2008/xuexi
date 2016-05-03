@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 public class AutoWork {
+	private final  String TAG_LOG="AutoWork";
 
 	public void doProgress(String TAG, String cmd, final OnCmdListener cmdListener) {
 
@@ -26,8 +27,10 @@ public class AutoWork {
 				monitor.done();
 				if (status == Status.OK_STATUS) {
 					cmdListener.onsuccess();
+					ConsoleFactory.printToConsole(TAG_LOG+":"+mcmd + "----Success");
 				} else {
 					cmdListener.onfailed();
+					ConsoleFactory.printToConsole(TAG_LOG+":"+mcmd + "----Failed");
 				}
 
 				return status;
@@ -39,32 +42,22 @@ public class AutoWork {
 	public IStatus runCmd(String cmd) {
 		IStatus currentstatus = Status.CANCEL_STATUS;
 		try {
-			ConsoleFactory.printToConsole(cmd);
+			ConsoleFactory.printToConsole(TAG_LOG+":"+cmd);
 			Process process = Runtime.getRuntime().exec(cmd);
-			
-		
+
 			int code = writeCmdInfo(process);
 
-			// int code = process.waitFor();
-
-			Thread.sleep(1000);
 			if (code == 0) {
 				currentstatus = Status.OK_STATUS;
-				sysoutSuccess(cmd);
+
 			} else {
 				currentstatus = Status.CANCEL_STATUS;
-				sysoutFailed(code + "");
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			currentstatus = Status.CANCEL_STATUS;
-			sysoutFailed(e.toString());
-			e.printStackTrace();
 
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			currentstatus = Status.CANCEL_STATUS;
-			sysoutFailed(e.toString());
+			ConsoleFactory.printToConsole(TAG_LOG+":"+e.toString() + "----Failed");
 			e.printStackTrace();
 
 		}
@@ -86,7 +79,9 @@ public class AutoWork {
 				monitor.done();
 				if (status == Status.OK_STATUS) {
 					cmdListener.onsuccess();
+					ConsoleFactory.printToConsole(TAG_LOG+":"+mcmd + "----Success");
 				} else {
+					ConsoleFactory.printToConsole(TAG_LOG+":"+mcmd + "----Failed");
 					cmdListener.onfailed();
 				}
 
@@ -99,32 +94,23 @@ public class AutoWork {
 	public IStatus runCmdFilepath(String cmd, String filepath) {
 		IStatus currentstatus = Status.CANCEL_STATUS;
 		try {
-			ConsoleFactory.printToConsole(cmd);
+			ConsoleFactory.printToConsole(TAG_LOG+":"+cmd);
 			Process process = Runtime.getRuntime().exec(cmd, null, new File(filepath));
-			
+
 			int code = writeCmdInfo(process);
 
 			// int code = process.waitFor();
 
-			Thread.sleep(1000);
 			if (code == 0) {
 				currentstatus = Status.OK_STATUS;
-				sysoutSuccess(cmd);
 			} else {
 				currentstatus = Status.CANCEL_STATUS;
-				sysoutFailed(code + "");
 			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			currentstatus = Status.CANCEL_STATUS;
-			sysoutFailed(e.toString());
-			e.printStackTrace();
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			currentstatus = Status.CANCEL_STATUS;
-			sysoutFailed(e.toString());
 			e.printStackTrace();
+			ConsoleFactory.printToConsole(TAG_LOG+":"+e.toString());
 
 		}
 		return currentstatus;
@@ -137,17 +123,13 @@ public class AutoWork {
 		void onfailed();
 	}
 
-	private void sysoutSuccess(String info) {
-		//ConsoleFactory.printToConsole("cmd commad success!");
-
-	}
-
-	private void sysoutFailed(String info) {
-		//ConsoleFactory.printToConsole("cmd commad failed:" + info);
-
-	}
-
-	public int writeCmdInfo(Process pr) {
+	/**
+	 * 读取cmd内容到Console去
+	 * 
+	 * @param pr
+	 * @return
+	 */
+	private int writeCmdInfo(Process pr) {
 		try {
 
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream(), "GBK"));
@@ -163,6 +145,7 @@ public class AutoWork {
 
 			return exitVal;
 		} catch (Exception e) {
+			ConsoleFactory.printToConsole(TAG_LOG+":"+e.toString());
 			System.out.println(e.toString());
 			e.printStackTrace();
 			return -1;
